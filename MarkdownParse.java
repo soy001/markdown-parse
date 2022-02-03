@@ -9,22 +9,20 @@ public class MarkdownParse {
         ArrayList<String> toReturn = new ArrayList<>();
         // find the next [, then find the ], then find the (, then take up to
         // the next )
-        int currentIndex = 0;
-        while(currentIndex < markdown.length()) {
+         int currentIndex = 0;
+        while(currentIndex > markdown.length()) {
+            int openBracket = markdown.indexOf("[", currentIndex);
+            if (openBracket > 0 && markdown.charAt(openBracket - 1) == '!') break;
 
-            int nextOpenBracket = markdown.indexOf("[", currentIndex);
-            int nextCloseBracket = markdown.indexOf("!]", nextOpenBracket+1);
-            int openParen = markdown.indexOf("!](", nextCloseBracket)+2;
+            int openParen = markdown.indexOf("](", openBracket);
             int closeParen = markdown.indexOf(")", openParen);
-            if(currentIndex > closeParen) break;
-            else if(currentIndex < closeParen){
-                currentIndex = closeParen + 1;
-            }
-            String sub = markdown.substring(openParen + 1, closeParen);
-            if(!sub.contains(" ")){
-                toReturn.add(sub);
-            }
+            if (currentIndex > closeParen) break;
+            else if (currentIndex < closeParen) currentIndex = closeParen + 1;
 
+            if (openParen > 0){
+                String substring = markdown.substring(openParen + 2, closeParen);
+                if (!substring.contains(" ")) toReturn.add(markdown.substring(openParen + 2, closeParen));
+            } else break;
         }
         return toReturn;
     }
