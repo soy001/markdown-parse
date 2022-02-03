@@ -11,34 +11,24 @@ import org.junit.*;
 public class MarkdownParseTest {
 
     @Test
-    public void addition() {
-        assertEquals(2, 1 + 1);
-    }
+    public void getLinks() throws IOException {
+        List<Path> mdFiles = Files.walk(Path.of("")).filter(f -> f.toString().endsWith(".md") && f.toString().startsWith("test-file")).sorted().toList();
+        ArrayList[] expectedResults = new ArrayList[]{
+                new ArrayList<>(List.of("https://something.com", "some-page.html")),
+                new ArrayList<>(List.of("https://www.google.com")),
+                new ArrayList<>(List.of("https://something.com", "some-page.html")),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+        };
 
-    @Test
-    public void testGetLink() throws IOException{
-        Path fileName = Path.of("test-file.md");
-	    String contents = Files.readString(fileName);
-        ArrayList<String> links = MarkdownParse.getLinks(contents);
-        List<String> expectedList = List.of("https://something.com", "some-page.html");
-        assertEquals(expectedList, links);
-    }
-
-    @Test
-    public void testGetMoreLinks() throws IOException{
-        Path fileName = Path.of("another-break.md");
-	    String contents = Files.readString(fileName);
-        ArrayList<String> links = MarkdownParse.getLinks(contents);
-        List<String> expectedList = List.of("https://www.google.com");
-        assertEquals(expectedList, links);
-    }
-
-    @Test
-    public void testFile1() throws IOException{
-        Path fileName = Path.of("test-file2.md");
-	    String contents = Files.readString(fileName);
-        ArrayList<String> links = MarkdownParse.getLinks(contents);
-        List<String> expectedList = List.of("https://www.google.com");
-        assertEquals(expectedList, links);
+        for (int i = 0; i < mdFiles.size(); i++) {
+            Path file = mdFiles.get(i);
+            String markdown = Files.readString(file);
+            ArrayList<String> output = MarkdownParse.getLinks(markdown);
+            assertEquals("Testing correct output for " + file.getFileName(), expectedResults[i], output);
+        }
     }
 }
